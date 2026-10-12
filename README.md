@@ -8,7 +8,7 @@
 [![Python](https://img.shields.io/badge/Python-3.12-3776ab?style=flat-square)](https://www.python.org/)
 
 **Team:** Devil May Cry (DMC)  
-**Challenge:** Phenikaa Campus Courier 2026 — `COURIER2` (new private-test dataset)  
+**Challenge:** Phenikaa Campus Courier 2026 — private-test round (`COURIER2`, new dataset)  
 **Reported result:** Top 13 out of 25 teams; **71.17% peak leaderboard macro accuracy**  
 **Development window:** October 8–10, 2026 (~48 hours)
 
@@ -82,7 +82,7 @@ The key design decision is to separate **perception**, **semantic parsing**, and
 
 The recorded fully learned CV benchmark on the **300-scene validation split** reports **85.67% scene-exact reconstruction (257/300)**. Scene-exact means the complete discrete graph, landmarks, robot state, and weather match the annotations—not merely that individual crops were classified accurately.
 
-The weakest visual style was `print` (66.22% scene-exact in the base experiment). A 768-pixel/style-routed experiment improved the validation CV score, but its public submission was worse, so it was not retained in the documented stronger public configurations.
+The weakest visual style was `print` (66.22% scene-exact in the base experiment). A 768-pixel/style-routed experiment improved the validation CV score, but its leaderboard submission scored lower, so it was not retained in the documented stronger configurations.
 
 Details: [`docs/CV_PROGRESS.md`](docs/CV_PROGRESS.md).
 
@@ -101,7 +101,7 @@ A **confidence-gated hybrid** (`HybridMissionParser`) uses the rule parser as th
 
 Synthetic Vietnamese examples, real annotated training scenes, held-out phrasing, and multiple model seeds were used to develop and evaluate NLP variants. The repository contains the generators and training scripts; several final NLP checkpoints are distributed via [GitHub Releases](https://github.com/AnDpTri/Top13-Phenikaa-AI-Hackathon-2026/releases/tag/v1.0.0).
 
-A particularly consequential experiment compared the same V5 model with neural `via` overrides disabled versus enabled (`via` confidence threshold `0.95`). The recorded public scores changed from **65.28% to 70.39%**, with **1,148 of 12,000 output actions** changing. This is a configuration comparison, not proof that every individual neural correction was right.
+A particularly consequential experiment compared the same V5 model with neural `via` overrides disabled versus enabled (`via` confidence threshold `0.95`). The recorded leaderboard scores changed from **65.28% to 70.39%**, with **1,148 of 12,000 output actions** changing. This is a configuration comparison, not proof that every individual neural correction was right.
 
 Details: [`docs/NLP_NEURAL.md`](docs/NLP_NEURAL.md), [`docs/NLP_V4_CURATED200K_R1_REPORT_20261009.md`](docs/NLP_V4_CURATED200K_R1_REPORT_20261009.md), and [`docs/REPORT_SUBMISSION_1182_20261010.md`](docs/REPORT_SUBMISSION_1182_20261010.md).
 
@@ -128,7 +128,7 @@ On validation using **ground-truth maps and missions** (isolating the strategy s
 | Earlier scene-level strategy model | 69.10% |
 | 48-profile candidate-action ranker | **73.60%** |
 
-These are **oracle-input solver results**, not public-test or fully end-to-end scores. Models subsequently fitted on both train and validation cannot be evaluated on that same validation split as an independent holdout.
+These are **oracle-input solver results**, not leaderboard or fully end-to-end scores. Models subsequently fitted on both train and validation cannot be evaluated on that same validation split as an independent holdout.
 
 #### Graph repair and graceful degradation
 
@@ -136,7 +136,7 @@ An early test diagnostic found **112/1,200 scenes** where the parsed mission cou
 
 The repair module tries progressively less conservative relaxations: ignore one-way constraints, add missing grid-adjacent edges, reopen closed roads, and reconstruct missing grid nodes. It then attempts normal candidate ranking again, with a greedy fallback if needed.
 
-On deliberately damaged validation graphs, the documented unreachable-case accuracy rose from **35.09% to 53.20%**. The isolated public repair submission improved from **55.67% to 57.56%**.
+On deliberately damaged validation graphs, the documented unreachable-case accuracy rose from **35.09% to 53.20%**. The isolated repair submission improved on the leaderboard from **55.67% to 57.56%**.
 
 **Known limitation:** repaired-graph candidates are not always revalidated against the original inferred graph's legal first actions. Repair is a pragmatic hackathon fallback, not a safety guarantee for physical navigation.
 
@@ -146,7 +146,9 @@ Details: [`docs/SOLVER_REPORT.md`](docs/SOLVER_REPORT.md), [`docs/FALLBACK_AUDIT
 
 The project started without an implemented solution. **52.39% was the first successful COURIER2 submission—not the starting accuracy of a pre-existing model.** The team then iterated through solver changes, graph repair, neural NLP, threshold calibration, and final model combinations.
 
-| Date (2026, ICT) | Submission / experiment | Public macro accuracy |
+All scores below are from the **`COURIER2` private-test round**, the only round that counts for qualification. They are the scores the website displayed during the contest, which the challenge specification says are computed on about 30% of the scored test scenes.
+
+| Date (2026, ICT) | Submission / experiment | Leaderboard macro accuracy |
 | --- | --- | ---: |
 | Oct 8, 10:25 | First end-to-end submission (`#1027`) | 52.39% |
 | Oct 8, 12:57 | Candidate-action strategy ranker (`#1045`) | 55.67% |
@@ -159,11 +161,11 @@ The project started without an implemented solution. **52.39% was the first succ
 | Oct 10, 11:50 | V5 + five-seed "Ultra" solver (`#1201`) | 70.83% |
 | Oct 10, 12:00 | V5+V9 ensemble, goal threshold 0.70 + Ultra solver (`#1208`) | **71.17%** |
 
-**Reported final standing: 13th out of 25 teams.** The competition uses a separate hidden final evaluation; public leaderboard scores and final placement should not be treated as the same metric. Submission identifiers and scores up to `#1182` are documented in the reports under [`docs/`](docs/). The scores and times of `#1201` and `#1208` come from leaderboard screenshots; the configuration behind each is taken from the development session's command log, as described in [Final submissions](#final-submissions-1201-and-1208).
+**Reported final standing: 13th out of 25 teams.** The final ranking uses the remaining scored test scenes, which are not shown during the contest; the in-contest leaderboard scores above and the final placement should not be treated as the same metric. Submission identifiers and scores up to `#1182` are documented in the reports under [`docs/`](docs/). The scores and times of `#1201` and `#1208` come from leaderboard screenshots; the configuration behind each is taken from the development session's command log, as described in [Final submissions](#final-submissions-1201-and-1208).
 
 Two lessons from the submission history are worth highlighting:
 
-- **Offline validation was not a perfect proxy for public test.** A CV routing experiment improved validation but reduced the public score; by contrast, changing NLP behavior helped on public scenes whose wording differed from the development data.
+- **Offline validation was not a perfect proxy for the test leaderboard.** A CV routing experiment improved validation but reduced the leaderboard score; by contrast, changing NLP behavior helped on test scenes whose wording differed from the development data.
 - **Operational correctness matters.** The team audited fallback rates, hashes, file differences, and even an accidental submission to the earlier `COURIER` challenge (a reported 25.44% score that is **not** a valid `COURIER2` result).
 
 ## Repository layout
@@ -319,7 +321,7 @@ The competition specification prohibits training, manual labeling, or rule const
 This is a hackathon snapshot, and several limitations are explicit:
 
 - **Error propagation:** an incorrect grid, map landmark, semantic goal, or via changes the routing problem for all ten robots in a scene.
-- **Distribution shift:** validation and public test can favor different configurations; test labels are unavailable for detailed attribution.
+- **Distribution shift:** validation and the test leaderboard can favor different configurations; test labels are unavailable for detailed attribution.
 - **Model approximation:** the candidate ranker learns from many route-cost hypotheses but does not prove that the ten hidden policies have been exactly recovered.
 - **Graph repair:** fallback relaxations help on damaged graphs but do not constitute verified, physical-robot-safe navigation; the final action should be rechecked against the original inferred legal action set in a future revision.
 - **Reproducibility:** inference for the final configuration is reproducible from the released checkpoints (see above), but not every historical training run has a complete end-to-end procedure in this repository. In particular the Ultra solver's training command is not checked in, and the V5 NLP training scripts under `results/` use absolute paths from the development machine.
